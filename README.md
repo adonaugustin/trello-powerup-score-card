@@ -1,4 +1,4 @@
-Card Score Power-Up for Trello
+<b>Card Score Power-Up for Trello</b>
 This Trello Power-Up provides a simple, visual way to assign and track scores (e.g., Priority, Effort, Risk) directly on Trello cards using custom badges and a dedicated section on the card back.
 
 ✨ Features
