@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <style>
+    /* 1. Ensure the container has predictable sizing */
+    #section-container { 
+        padding: 5px 0;
+        /* Giving it a default, visible height in case of Trello sizing failure */
+        min-height: 50px; 
+    }
+    .score-display {
+      font-size: 16px;
+      padding: 5px 0;
+    }
+    .score-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 3px;
+      font-weight: bold;
+      color: white;
+      text-transform: uppercase;
+      margin-left: 5px;
+    }
+    .low { background: #61bd4f; }
+    .medium { background: #f2d600; color: black; }
+    .high { background: #eb5a46; }
+  </style>
+</head>
+<body>
+  <div id="section-container"> 
+    <div class="score-display" id="score-output">Loading score...</div>
+  </div>
+
+  <script>
+    // 1. Initialize the Trello client with robust sizing settings
+    var t = window.TrelloPowerUp.iframe({
+        // minHeight is set directly in the iframe initialization
+        autoSize: true, 
+        minHeight: 50
+    });
+    var SCORE_KEY = 'card-score';
+
+    // 2. The core logic to get and display the score
+    const renderSection = function() {
+        t.get('card', 'shared', SCORE_KEY)
+          .then(function(score) {
+            var output = document.getElementById('score-output');
+            
+            if (score) {
+              const scoreClass = score.toLowerCase();
+              output.innerHTML = `
+                Current Score: 
+                <span class="score-badge ${scoreClass}">${score}</span>
+              `;
+            } else {
+              output.innerHTML = 'Score not yet set.';
+            }
+
+            // 3. CRITICAL: Sizing call inside the promise chain
+            // This ensures sizing only happens AFTER the content has been written to the DOM
+            // We use the ID of the main container.
+            return t.sizeTo('#section-container'); 
+          })
+          .catch(function(error) {
+              console.error("Card Back Section Error:", error);
+              document.getElementById('score-output').innerHTML = 'Error loading score.';
+              return t.sizeTo('#section-container'); 
+          });
+    };
+    
+    // 4. Register and Execute the render function immediately upon loading
+    // We use the built-in Trello mechanism which is generally more reliable than DOMContentLoaded here.
+    t.render(renderSection);
+
+    // 5. FAILSAFE RENDER (In case Trello's render is delayed or buggy)
+    // We force a render after a short delay to catch the scenario where content loads late.
+    window.setTimeout(function(){
+      renderSection(); 
+    }, 100); 
+
+  </script>
+</body>
+</html>

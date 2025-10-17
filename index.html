@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Card Score Power-Up</title>
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+</head>
+<body>
+  <script>
+    /*
+     * Trello calls TrelloPowerUp.initialize() to get the Power-Up's capabilities.
+     * This file is usually accessed at your Base URL (e.g., https://your-domain.com/index.html)
+     */
+    TrelloPowerUp.initialize({
+      
+      // 1. Define the Card Button capability
+      // This is the button that users click to open your pop-up.
+      'card-back-section': function(t, options){
+      return {
+        title: 'Card Score Details', // The title of the section on the card back
+        icon: 'https://adonaugustin.github.io/trello-powerup-score/icon.png', // Same icon as the button
+        // The URL points to the HTML file Trello should load for the section content
+        url: './section.html' 
+      };
+    },
+      'card-buttons': function(t, options) {
+        return [{
+          icon: 'https://adonaugustin.github.io/trello-powerup-score/icon.png', // A placeholder icon URL
+          text: 'Set Score',
+          callback: function(t) {
+            // Trello opens the pop-up defined in the 'popup.html' file.
+            return t.popup({
+              title: 'Set Card Score',
+              // IMPORTANT: This URL points to your second file, 'popup.html'
+              url: './popup.html' 
+            });
+          }
+        }];
+      },
+      
+      // 2. Define the Card Badge capability (Optional, but highly recommended)
+      // This shows the saved score directly on the card face.
+    // 2. Define the Card Badge capability (Updated and safer)
+      'card-badges': function(t, options) {
+        return t.get('card', 'shared', 'card-score')
+          .then(function(score) {
+            
+            // If no score exists, return an empty array immediately.
+            if (!score) {
+              return [];
+            }
+            
+            // Score exists, so determine the color.
+            let color = 'light-gray';
+            if (score === 'Low') color = 'green';
+            else if (score === 'Medium') color = 'yellow';
+            else if (score === 'High') color = 'red';
+
+            return [{
+              title: 'Score',
+              text: score,
+              color: color
+            }];
+
+          })
+          // CRUCIAL: Add a .catch() to handle any errors from t.get() or the logic above.
+          .catch(function(error) {
+            console.error("Card Badges Error:", error);
+            // If an error occurs, return an empty array instead of crashing the Power-Up.
+            return []; 
+          });
+      },
+      'card-detail-badges': function(t, options) {
+    return t.get('card', 'shared', 'card-score')
+        .then(function(score) {
+            if (score) {
+                let color = 'light-gray';
+                if (score === 'Low') color = 'green';
+                else if (score === 'Medium') color = 'yellow';
+                else if (score === 'High') color = 'red';
+
+                return [{
+                    title: 'Score',   // Mouseover text
+                    text: score,      // The text displayed on the badge
+                    color: color,     // The badge background color
+                    refresh: 10       // Ensures the badge updates periodically
+                }];
+            }
+            return [];
+        })
+        .catch(function(error) {
+            console.error("Card Detail Badges Error:", error);
+            return [];
+        });
+},
+
+    });
+  </script>
+</body>
+</html>
