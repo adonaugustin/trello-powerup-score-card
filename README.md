@@ -44,7 +44,7 @@ Go to the Trello Power-Up Administration.
 
 Click "Create New Power-Up."
 
-Set the IFrame Connector URL (Your Base URL) to the URL where your index.html is hosted (e.g., https://your-domain.com/).
+Set the IFrame Connector URL (https://majestic-gaufre-d33697.netlify.app/) to the URL where your index.html is hosted.
 
 Enable Capabilities: The index.html file automatically registers the necessary capabilities (card-buttons, card-badges, card-detail-badges, card-back-section).
 
